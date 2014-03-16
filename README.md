@@ -1,15 +1,17 @@
 dualscope123
 ============
 
-A versatile tiny software oscilloscope + spectrum analyser in Python/qwt
+A versatile, tiny oscilloscope + spectrum analyser in Python/qwt
 
-```dualscope123``` was written by Giuseppe Venturini, as a fork of Roger 
-Fearick's ```dualscope.py```, v. 0.7c.
+```dualscope123``` is a fork of Roger 
+Fearick's ```dualscope.py```, written by me, Giuseppe Venturini.
 
-The interface, based on qwt, uses a familar 'knob based' layout
-similarly to that of an analogue scope, only the input data is digital.
+The interface, based on qwt and uses a 'knob based' layout,
+similarly to that found in an analogue scope. 
 
-The author uses the tool to quickly inspect the data from ADCs under test. 
+This tool may be employed to quickly inspect the data from digital-output 
+devices, such as an ADC testbench.
+
 It is here distributed in the hope that it may be useful.
 
 ## Features
@@ -29,20 +31,28 @@ A cross hair status display permits the reading of values off the screen.
 
 ## Software probes and extending dualscope123
 
-Different software probes may be used, according to what the user wishes to
-accomplish with this tool.
+### Software probes
 
-A simple, example probe reading the input jack of the audio card is provided.
+The digital input data is provided by software probes.
+
+Different probes may be used, according to what the user wishes to
+accomplish:
+
+*  A simple, example probe reading the input jack of the audio card is provided.
 This probe requires ```pyaudio``` and it should be working on any machine
 supported by pyaudio. 
 
-The author of this tool (GV) employs a different probe, designed to turn this 
+* I personally use a different probe, designed to turn this 
 oscilloscope into a crude-but-fast debugging tool for prototype ADCs: 
 a ctypes-based module 
 to read-out over TCP-IP the data buffer of an FPGA located in the ADC testbench 
-(not part of this project). This probe is included as well. Although it will be
+(not part of this project). This probe is included as well: although it will be
 of little to no use to anybody else, *as is*, it may be used as inspiration
 to write simliar network-based software probes.
+
+The probes have a standard interface and new probes can be easily coded.
+
+### More traces
 
 Two traces are provided, as they seem to allow covering all cases of interest
 in my setup, but more may be added easily.
@@ -66,7 +76,7 @@ All subsequent additions, see ```dualscope123``` are:
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3
+as published by the Free Software Foundation; version 3
 of the License.
 
 This program is distributed in the hope that it will be useful,
