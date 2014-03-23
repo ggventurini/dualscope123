@@ -8,7 +8,7 @@ class Probe(GenericProbe):
 		self.CHUNK = 8192    # input buffer size in frames
 		self.FORMAT = pyaudio.paInt16
 		self.CHANNELS = 2
-		self.RATE = 48000    # depends on sound card: 96000 might be possible
+		self.RATE = 44100    # depends on sound card: 96000 might be possible
 		self.p = None
 
 	def open(self):

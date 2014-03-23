@@ -377,25 +377,19 @@ class Scope(Qwt.QwtPlot):
 		if not len(zero_crossings): return
 		print "Triggering on sample", zero_crossings[0]
 		imin = zero_crossings[0]
-		imax = zero_crossings[0]+points
+		imax = zero_crossings[0] + points
 		data_CH2 = data_CH2[imin:imax]
 
         if self.autocorrelation:
             if SELECTEDCH == BOTH12 or SELECTEDCH == CH1:
 		channel = 1
-        	X = self.datastream.read(channel, read_points, verbose)
-		if X is None or not len(X): return
-		if len(X) == 0: return
-                data_CH1 = np.array(np.correlate(X[:2*points], X[:points], mode='full'), dtype='float_')[points:]
+                data_CH1 = np.array(np.correlate(data_CH1[:2*points], data_CH1[:points], mode='full'), dtype='float_')[points:]
 		data_CH1 = data_CH1/data_CH1[0]
             else:
 		data_CH1 = np.zeros((points,))
             if SELECTEDCH == BOTH12 or SELECTEDCH == CH2:
 		channel = 2
-        	X = self.datastream.read(channel, read_points, verbose)
-		if X is None or not len(X): return
-		if len(X) == 0: return
-                data_CH2 = np.array(np.correlate(X[:points], X, mode='full'), dtype='float_')[points:]
+                data_CH2 = np.array(np.correlate(data_CH2[:2*points], data_CH2[:points], mode='full'), dtype='float_')[points:]
 		data_CH2 = data_CH2/data_CH2[0]
             else:
 		data_CH2 = np.zeros((points,))
@@ -404,7 +398,7 @@ class Scope(Qwt.QwtPlot):
             self.a1 = data_CH1
             self.a2 = data_CH2
         else:
-            self.avcount+=1
+            self.avcount += 1
             if self.avcount == 1:
                 self.sumCH1 = np.array(data_CH1, dtype=float_)
                 self.sumCH2 = np.array(data_CH2, dtype=float_)
