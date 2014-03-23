@@ -75,10 +75,104 @@ probe = audio
 which contains all configuration options and is rather self-explanatory.
 
 ## Dependencies:
- * numpy         -- numerics, fft
- * PyQt4, PyQwt5 -- gui, graphics
+ * `numpy`         -- numerics, fft
+ * `PyQt4`, `PyQwt5` -- gui, graphics
 
+### A quick guide to installing PyQwt5
 
+Installing `PyQwt5` may be complicated the first time one faces the task. Neither `PyQt4` nor `PyQwt5` are on the PYPI.
+
+#### Install the binary libraries.
+
+Straight forward on Linux, on Mac OS X it is greately simplified by using [Homebrew](http://brew.sh/).
+
+```bash
+brew install qt qwt portaudio wget
+```
+
+#### Create a virtual environment:
+
+If you have the `virtualenv` wrapper installed:
+
+```bash
+mkvirtualenv env_qwt
+```
+
+or, if you are on Mac and use [Anaconda](https://store.continuum.io/cshop/anaconda/):
+
+```bash
+conda create -n qwt_env setuptools
+source activate qwt_env
+```
+
+If you use another Python environment / package manager please check how to make a virtual environment. Installing in a separate environment allows keeping the changes separate and reistalling in a sec.
+
+#### Install numpy
+
+```bash
+pip install numpy
+```
+or, if you are on Mac and use Anaconda:
+
+```bash
+conda install numpy
+```
+
+#### Install SIP
+
+As of writing, the latest `SIP` version is `4.15.6-snapshot`. Make sure to check on the [SIP website](http://www.riverbankcomputing.com/) if there is a newer one!
+
+Make sure you configure `SIP` with `--incdir=YOUR_INCLUDE_PATH`. With virtualenv, that is likely `$HOME/.virtualenvs/env_qwt/include`, with Anaconda, `/anaconda/envs/qwt_env/include/`.
+
+Then:
+
+```bash
+wget http://www.riverbankcomputing.com/static/Downloads/sip4/sip-4.15.6-snapshot-0c1b13e45887.tar.gz
+tar zxf sip-4.15.6-snapshot-0c1b13e45887.tar.gz
+cd sip-4.15.6-snapshot-0c1b13e45887/
+python configure.py --incdir=$HOME/.virtualenvs/env_qwt/include
+make
+make install
+cd ..
+```
+
+Remember that if you update `SIP`, you need to reinstall the following packages as well.
+
+#### Install PyQt4
+
+Make sure to download the latest version for your platform. As of writing, [link for linux](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.10.4/PyQt-x11-gpl-4.10.4.tar.gz), [link for Mac](http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.10.4/PyQt-mac-gpl-4.10.4.tar.gz). You may want to check if newer versions are available!
+
+```bash
+wget http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.10.4/PyQt-x11-gpl-4.10.4.tar.gz
+tar zxf PyQt-x11-gpl-4.10.4.tar.gz
+cd PyQt-x11-gpl-4.10.4/
+python configure.py
+make -j9
+make install
+cd ..
+```
+
+#### Install PyQwt5 
+
+```bash
+wget "http://downloads.sourceforge.net/project/pyqwt/pyqwt5/PyQwt-5.2.0/PyQwt-5.2.0.tar.gz
+tar xvzf PyQwt-5.2.0.tar.gz
+cd PyQwt-5.2.0/configure
+python configure.py -Q ../qwt-5.2
+make -j9
+make install
+cd ../..
+```
+
+Check that PyQwt5 works with:
+
+```bash
+python -c 'from PyQt4 import Qwt5'
+```
+
+No errors? woohoo, it works!
+
+**Credit:** [David Balbert's pyqwt gist](https://gist.github.com/davidbalbert/5768767).
 
 ## Copyright 
 
