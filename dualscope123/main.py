@@ -93,9 +93,9 @@ import numpy.fft as FFT
 
 # part of this package -- csv interface and toolbar icons
 import csvlib, icons
-import dualscope.probes
+import dualscope123.probes
 
-#from dualscope.probes import eth_nios
+from dualscope123.probes import eth_nios
 
 # scope configuration
 CHANNELS = 2
@@ -1112,9 +1112,10 @@ def load_cfg():
     conf = ConfigParser.ConfigParser()
     print "Loaded config file %s" % (conf_path,)
     if not os.path.isfile(conf_path):
+        conf.add_section('probes')
         conf.set("probes", "probe", 'audio')
-        conf.set("default", "verbose", 'false')
-        with open(conf_path, 'r') as fp:
+        conf.set("DEFAULT", "verbose", 'false')
+        with open(conf_path, 'w') as fp:
             conf.write(fp)
         return load_cfg()
     else:
@@ -1122,7 +1123,7 @@ def load_cfg():
         if not 'probes' in conf.sections():
             raise ConfigParser.NoSectionError("Malformed config file.")
         probe_name = conf.get('probes', 'probe').strip("\"'").strip()
-        verbose = conf.get('default', 'verbose').strip("\"'").strip()
+        verbose = conf.get('DEFAULT', 'verbose').strip("\"'").strip()
     try:
         probe_module = importlib.import_module("."+probe_name, "dualscope123.probes")
     except ImportError:
