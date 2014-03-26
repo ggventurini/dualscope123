@@ -60,7 +60,7 @@ Look into the `audio` probe and the `generic` probe for examples.
 ### Probe setup
 
 Which probe is employed is selected through a config INI file named
-`~/.config/.dualscope123`, read once, at start-up time.
+`~/.dualscope123`, read once, at start-up time.
 
 The default configuration is:
 
@@ -72,7 +72,10 @@ verbose = false
 probe = audio
 ```
 
-which contains all configuration options and is rather self-explanatory.
+which contains all configuration base options and is rather self-explanatory.
+
+A probe may require some configuration, in the form of a section named as the
+probe containing the relevant options.
 
 ## Dependencies:
  * `numpy`         -- numerics, fft
