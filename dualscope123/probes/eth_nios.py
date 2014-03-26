@@ -23,22 +23,22 @@ class Probe(GenericProbe):
 		self.port = None
 
 	def open(self):
-		conf_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'eth_nios.cfg'))
+		conf_path = os.path.expanduser('~/.dualscope123')
 		conf = ConfigParser.ConfigParser()
 		if not os.path.isfile(conf_path):
 			raise Exception(
-                              "Please configure ~/.dualscope123 section" + 
-			      "eth_nios with hostname and port")
+                              "Please configure %s section " % (conf_path) + 
+			      " eth_nios with hostname and port")
 		conf.read([conf_path])
-		if not 'nios_eth' in conf.sections():
+		if not 'eth_nios' in conf.sections():
 			raise ConfigParser.NoSectionError(
                               "Please configure ~/.dualscope123 section" + 
 			      "eth_nios with hostname and port")
 		self.HOSTNAME = conf.get('eth_nios', 'hostname').strip("\"'")
-        	self.PORT = conf.get('eth_nios', 'hostname').strip("\"'")
+        	self.PORT = conf.get('eth_nios', 'port').strip("\"'")
 
 
-	def read(self, channel, npoints):
+	def read(self, channel, npoints, verbose):
                 """Read 'nchunks' chunks from channel 'channel'.
 
                 Args:
@@ -52,21 +52,21 @@ class Probe(GenericProbe):
                 """
 		nchunks = int(npoints/self.CHUNK) + 1*(npoints % self.CHUNK > 0)
 
-		channels = [int(c) for c in str(channels)]
+		channels = [int(c) for c in str(channel)]
 		data = []
 
 		for c in channels:
 			if verbose:
 				print "Starting: %s %s %s %s" % \
-                		    (self.HOSTNAME, int(self.PORT), int(channel), int(nchunks))
+                		    (self.HOSTNAME, int(self.PORT), int(c), int(nchunks))
 			start_time = time.time()
-			x = _libfunctions.read_nios(self.HOSTNAME, int(self.PORT), int(channel)-1, int(nchunks))
+			x = _libfunctions.read_nios(self.HOSTNAME, int(self.PORT), int(c)-1, int(nchunks))
 			end_time = time.time()
 			if verbose:
 				print "CH%d: received %d bytes (%d frames, %d chunks) at %d kbps" % \
-                              (channel, len(x)/2, len(x)/8, len(x)/8/350,
+                              (c, len(x)/2, len(x)/8, len(x)/8/350,
                                4e-3*len(x)/(end_time - start_time))
-			data += [np.array(struct.unpack('<'+('i'*nchunks*CHUNK), x.decode('hex')))]
+			data += [np.array(struct.unpack('<'+('i'*nchunks*self.CHUNK), x.decode('hex')))]
 			if verbose:
 				print data[-1]
 		return data
