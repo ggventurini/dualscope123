@@ -92,7 +92,7 @@ import numpy as np
 import numpy.fft as FFT
 
 # part of this package -- csv interface and toolbar icons
-import csvlib, icons
+from . import csvlib, icons, utils
 import dualscope123.probes
 
 from dualscope123.probes import eth_nios
@@ -382,15 +382,11 @@ class Scope(Qwt.QwtPlot):
 
         if self.autocorrelation:
             if SELECTEDCH == BOTH12 or SELECTEDCH == CH1:
-		channel = 1
-                data_CH1 = np.array(np.correlate(data_CH1[:2*points], data_CH1[:points], mode='full'), dtype='float_')[points:]
-		data_CH1 = data_CH1/data_CH1[0]
+                data_CH1 = utils.autocorrelation(data_CH1[:2*points])[:points]
             else:
 		data_CH1 = np.zeros((points,))
             if SELECTEDCH == BOTH12 or SELECTEDCH == CH2:
-		channel = 2
-                data_CH2 = np.array(np.correlate(data_CH2[:2*points], data_CH2[:points], mode='full'), dtype='float_')[points:]
-		data_CH2 = data_CH2/data_CH2[0]
+                data_CH2 = utils.autocorrelation(data_CH2[:2*points])[:points]
             else:
 		data_CH2 = np.zeros((points,))
 		
@@ -400,32 +396,32 @@ class Scope(Qwt.QwtPlot):
         else:
             self.avcount += 1
             if self.avcount == 1:
-                self.sumCH1 = np.array(data_CH1, dtype=float_)
-                self.sumCH2 = np.array(data_CH2, dtype=float_)
+                self.sumCH1 = np.array(data_CH1, dtype=np.float_)
+                self.sumCH2 = np.array(data_CH2, dtype=np.float_)
             else:
                 if SELECTEDCH==BOTH12:
                     assert len(data_CH1) == len(data_CH2)
                     lp = len(data_CH1)
                     if len(self.sumCH1) == lp and len(self.sumCH2) == lp:
-                        self.sumCH1 = self.sumCH1[:lp] + np.array(data_CH1[:lp], dtype=float_)
-                        self.sumCH2 = self.sumCH2[:lp] + np.array(data_CH2[:lp], dtype=float_)
+                        self.sumCH1 = self.sumCH1[:lp] + np.array(data_CH1[:lp], dtype=np.float_)
+                        self.sumCH2 = self.sumCH2[:lp] + np.array(data_CH2[:lp], dtype=np.float_)
                     else:
-                        self.sumCH1 = data_CH1
-                        self.sumCH2 = data_CH2
+                        self.sumCH1 = np.array(data_CH1, dtype=np.float_)
+                        self.sumCH2 = np.array(data_CH2, dtype=np.float_)
                         self.avcount = 1
                 elif SELECTEDCH == CH1:
                     lp = len(data_CH1)
                     if len(self.sumCH1) == lp:
-                        self.sumCH1 = self.sumCH1[:lp] + np.array(data_CH1[:lp], dtype=float_)
+                        self.sumCH1 = self.sumCH1[:lp] + np.array(data_CH1[:lp], dtype=np.float_)
                     else:
-                        self.sumCH1=data_CH1
-                        self.avcount=1
+                        self.sumCH1 = np.array(data_CH1, dtype=np.float_)
+                        self.avcount = 1
                 elif SELECTEDCH==CH2: 
                     lp = len(data_CH2)
                     if len(self.sumCH2) == lp:
-                        self.sumCH2 = self.sumCH2[:lp] + np.array(data_CH2[:lp], dtype=float_)
+                        self.sumCH2 = self.sumCH2[:lp] + np.array(data_CH2[:lp], dtype=np.float_)
                     else:
-                        self.sumCH2 = data_CH2
+                        self.sumCH2 = np.array(data_CH2, dtype=np.float_)
                         self.avcount = 1
         
             self.a1 = self.sumCH1/self.avcount
@@ -1114,10 +1110,16 @@ def load_cfg():
         return load_cfg()
     else:
         conf.read([conf_path])
-        if not 'probes' in conf.sections():
+        if not 'probes' in conf.sections() or 'DEFAULT' in conf.sections():
             raise ConfigParser.NoSectionError("Malformed config file.")
-        probe_name = conf.get('probes', 'probe').strip("\"'").strip()
-        verbose = conf.get('DEFAULT', 'verbose').strip("\"'").strip()
+        try:
+            probe_name = conf.get('probes', 'probe').strip("\"'").strip()
+        except ConfigParser.NoOptionError:
+            probe = default[1:]
+        try:
+            verbose = conf.get('DEFAULT', 'verbose').strip("\"'").strip()
+        except ConfigParser.NoOptionError:
+            verbose = False
     try:
         probe_module = importlib.import_module("."+probe_name, "dualscope123.probes")
     except ImportError:
