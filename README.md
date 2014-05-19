@@ -6,7 +6,7 @@ A versatile, tiny oscilloscope + spectrum analyser in Python/qwt
 ```dualscope123``` is a fork of Roger 
 Fearick's ```dualscope.py```.
 
-The interface, based on qwt and uses a 'knob based' layout,
+The interface, based on qwt, uses a 'knob based' layout,
 similarly to that found in an analogue scope. 
 
 ![screenshot](https://github.com/ggventurini/dualscope123/raw/master/dualscope123.png)
